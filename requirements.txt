@@ -1,0 +1,10 @@
+pandas
+openpyxl
+requests
+BeautifulSoup4
+dash
+dash_html_components
+dash_core_components
+dash_table
+dash_bootstrap_components
+gunicorn
