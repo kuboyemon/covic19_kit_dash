@@ -23,7 +23,17 @@ df=pd.read_excel(url_covic_xlsx)
 
 df_tochigi=df[df['都道府県名']=='栃木県']
 df_tochigi.reset_index(drop=True,inplace=True)
-df_tochigi=df_tochigi[['薬局名称','所在地','電話番号']]
+
+df_select=pd.DataFrame(df_tochigi[['薬局名称','所在地','電話番号']])
+
+def make_clickable(val):
+    return '<a href="https://www.google.co.jp/maps/place/{}" target="_blank">{}</a>'.format(val,val)
+
+def make_telable(tel_num):
+    return "<a href='tel:{}'>{}</a>".format(tel_num,tel_num)
+
+# df_select.style.format({'所在地':make_clickable,'電話番号':make_telable})
+
 #アプリ部分の作成
 import dash
 import dash_html_components as html
@@ -51,8 +61,7 @@ app.layout=html.Div([
         ],
         value='宇都宮市'
     ),
-    html.Div(id='output-container', style={"margin": "5%"}),
-    html.Div(id='body-div',style={'margin':'5%'})
+    html.Div(id='output-container', style={"margin": "5%"})
 
 ])
 
@@ -60,8 +69,9 @@ app.layout=html.Div([
     Output('output-container', 'children'),
     [Input('city-dropdown', 'value')])
 def input_triggers_spinner(value):
-    df_filtered = df_tochigi[df_tochigi["所在地"].str.contains(value)]
-    df_filtered=df_filtered[['薬局名称','所在地','電話番号']]
+    df_filtered = df_select[df_select['所在地'].str.contains(value)]
+    df_filtered.style.format({'所在地':make_clickable,'電話番号':make_telable})
+
     output_table = dash_table.DataTable(
         id='table',
         columns=[{"name": i, "id": i} for i in df_filtered.columns],
@@ -82,40 +92,7 @@ def input_triggers_spinner(value):
     )
     return output_table
 
-# @app.callback(
-#     Output(component_id='body-div', component_property='children'),
-#     Input(component_id='selected_rows', component_property='selected_rows')
-# )
-# def update_output(selected_rows):
-#     if selected_rows is None:
-#         raise PreventUpdate
-#     else:
-#         return '''
-        
-        
-#         '''
 
-    
-    
-#     # dcc.Dropdown(
-#     #     id='demo-dropdown',
-#     #     options=['すべて','宇都宮市','足利市','栃木市','佐野市','鹿沼市',
-#     # '日光市','小山市','真岡市','大田原市','矢板市','那須塩原市',
-#     # 'さくら市','那須烏山市','下野市',
-#     # '上三川町','益子町','茂木町','市貝町',
-#     # '芳賀町','壬生町','野木町','塩谷町','高根沢町','那須町','那珂川町'
-#     #     ],
-    #     value='すべて',
-    #     labelStyle={'display':'inline-block'}
-    # ),
-
-# #コールバック部分の作成
-# @app.callback(
-#     Output('dd-output-container', 'children'),
-#     Input('demo-dropdown', 'value')
-# )
-# def update_output(value):
-#     return f'You have selected {value}'
 
 #アプリの実行
 if __name__=='__main__':
