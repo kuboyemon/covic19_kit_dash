@@ -21,10 +21,10 @@ url_covic_xlsx='https://www.mhlw.go.jp'+f'{xlsx_list[0]}'
 
 df=pd.read_excel(url_covic_xlsx)
 
-df_tochigi=df[df['都道府県名']=='栃木県']
+df_tochigi=df[df['都道府県']=='栃木県']
 df_tochigi.reset_index(drop=True,inplace=True)
 
-df_select=pd.DataFrame(df_tochigi[['薬局名称','所在地','電話番号']])
+df_select=pd.DataFrame(df_tochigi[['名称','所在地','電話番号']])
 
 def make_clickable(val):
     return '<a href="https://www.google.co.jp/maps/place/{}" target="_blank">{}</a>'.format(val,val)
